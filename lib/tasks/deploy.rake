@@ -5,7 +5,7 @@ require 'tmpdir'
 
 task :deploy do
   invoke 'deploy:get_image'
-  invoke 'deploy:stop'
+  invoke 'deploy:remove'
   invoke 'deploy:start_new'
   invoke 'deploy:cleanup'
 end
@@ -30,6 +30,7 @@ task :repair do
 end
 
 task :stop => ['deploy:stop']
+task :remove => ['deploy:remove']
 task :enter_container => ['deploy:enter_container']
 
 namespace :dev do
@@ -99,6 +100,15 @@ namespace :deploy do
   task :stop do
     on_each_docker_host do |server|
       stop_containers(server, defined_service, fetch(:stop_timeout, 30))
+    end
+  end
+
+  # remove
+  # - remote: list
+  # - remote: stop
+  task :remove do
+    on_each_docker_host do |server|
+      remove_containers(server, defined_service)
     end
   end
 

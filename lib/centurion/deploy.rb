@@ -21,6 +21,18 @@ module Centurion::Deploy
     end
   end
 
+  def remove_containers(target_server, service)
+    # Note: once a container is stopped it loses its port and isn't return in find_containers_by_public_port
+    old_containers = target_server.find_containers_by_name(service.name, true)
+
+    info "Removing container(s): #{old_containers.inspect}"
+
+    old_containers.each do |old_container|
+      info "Remove old container #{old_container['Id'][0..7]} (#{old_container['Names'].join(',')})"
+      target_server.remove_container(old_container['Id'])
+    end
+  end
+
   def wait_for_health_check_ok(health_check_method, target_server, container_id, port, endpoint, image_id, tag, sleep_time=5, retries=12)
     info 'Waiting for the port to come up'
     healthy = false

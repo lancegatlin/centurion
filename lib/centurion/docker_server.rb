@@ -35,7 +35,7 @@ class Centurion::DockerServer
   end
 
   def find_containers_by_public_port(public_port, type='tcp')
-    ps.select do |container|
+    ps({ :all => true }).select do |container|
       next unless container && container['Ports']
       container['Ports'].find do |port|
         port['PublicPort'] == public_port.to_i && port['Type'] == type
@@ -43,11 +43,11 @@ class Centurion::DockerServer
     end
   end
 
-  def find_containers_by_name(wanted_name)
-    ps.select do |container|
+  def find_containers_by_name(wanted_name, allContainers = false)
+    ps({ :all => allContainers }).select do |container|
       next unless container && container['Names']
       container['Names'].find do |name|
-        name =~ /\A\/#{wanted_name}(-[a-f0-9]{14})?\Z/
+        name =~ /\A\/#{wanted_name}?\Z/
       end
     end
   end

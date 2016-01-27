@@ -36,7 +36,7 @@ class Centurion::DockerViaApi
   end
 
   def remove_container(container_id)
-    path = "/v#{@docker_api_version}/containers/#{container_id}"
+    path = "/v#{@docker_api_version}/containers/#{container_id}?force=true"
     response = Excon.delete(
       @base_uri + path,
       tls_excon_arguments
@@ -60,7 +60,7 @@ class Centurion::DockerViaApi
     response = Excon.post(
       @base_uri + path,
       tls_excon_arguments.merge(
-        query: name ? {name: "#{name}-#{SecureRandom.hex(7)}"} : nil,
+        query: name ? {name: "#{name}"} : nil,
         body: configuration.to_json,
         headers: { "Content-Type" => "application/json" }
       )
