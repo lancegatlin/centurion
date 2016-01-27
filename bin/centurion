@@ -21,6 +21,9 @@ Dir.glob(File.join(task_dir, '*.rake')).each { |file| load file }
 #
 require 'trollop'
 
+# Always say name and show version for troubleshooting
+puts "Centurion #{Centurion::VERSION}"
+
 opts = Trollop::options do
   opt :project,          'project (blog, forums...)',            type: String, required: true,  short: '-p'
   opt :environment,      "environment (production, staging...)", type: String, required: true,  short: '-e'
