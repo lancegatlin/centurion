@@ -118,7 +118,22 @@ namespace :deploy do
   # - remote: inspect container
   task :start_new do
     on_each_docker_host do |server|
-      start_new_container(server, defined_service, defined_restart_policy)
+      container = start_new_container(server, defined_service, defined_restart_policy)
+
+      defined_service.public_ports.each do |port|
+        wait_for_health_check_ok(
+          fetch(:health_check, method(:http_status_ok?)),
+          server,
+          container['Id'],
+          port,
+          fetch(:status_endpoint, '/'),
+          fetch(:image),
+          fetch(:tag),
+          fetch(:health_check_wait_time, 5),
+          fetch(:health_check_retries, 24)
+        )
+      end
+
     end
   end
 
